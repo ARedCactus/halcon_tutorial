@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hdevelop file_version="1.2" halcon_version="21.11.0.0">
+<procedure name="main">
+<interface/>
+<body>
+<c></c>
+<l>*open_framegrabber ('DirectShow', 1, 1, 0, 0, 0, 0, 'default', 8, 'rgb', -1, 'false', 'default', '[1] Integrated Camera', 0, -1, AcqHandle)</l>
+<l>open_framegrabber ('DirectShow', 1, 1, 0, 0, 0, 0, 'default', 8, 'rgb', -1, 'false', 'default', '[0] YW500', 0, -1, AcqHandle)</l>
+<l>grab_image_start (AcqHandle, -1)</l>
+<l>grab_image_async (Image_n0, AcqHandle, -1)</l>
+<l>get_image_size (Image_n0, Width, Height)</l>
+<l>dev_open_window (0, 0, Width*2, Height*2, 'white', WindowHandle)</l>
+<l>dev_display (Image_n0)</l>
+<l>Regions := ['red', 'green', 'blue','black' ,'background']</l>
+<l>Highlight := ['red', 'green', 'blue','black']</l>
+<c></c>
+<l>gen_empty_obj (Classes)</l>
+<c></c>
+<l> for I := 1 to 5 by 1</l>
+<l>     dev_display (Image_n0)</l>
+<l>     dev_display (Classes)</l>
+<l>draw_rectangle1 (WindowHandle, Row1, Column1, Row2, Column2)</l>
+<l>gen_rectangle1 (Rectangle, Row1, Column1, Row2, Column2)</l>
+<l>concat_obj (Classes, Rectangle, Classes)</l>
+<l> endfor</l>
+<c></c>
+<l>create_class_mlp (3, 7, 5, 'softmax', 'normalization', 3, 42, MLPHandle)</l>
+<l>add_samples_image_class_mlp (Image_n0, Classes, MLPHandle)</l>
+<l>train_class_mlp (MLPHandle, 400, 0.5, 0.01, Error, ErrorLog)</l>
+<l>*write_class_mlp (MLPHandle, 'train_mlp_3color')</l>
+<l>stop ()</l>
+<c></c>
+<l>read_class_mlp ('train_mlp_3color', MLPHandle)</l>
+<l>while (true)</l>
+<l>    grab_image_async (Image_n, AcqHandle, -1)</l>
+<l>    classify_image_class_mlp (Image_n, ClassRegions, MLPHandle, 0.5)</l>
+<c>    </c>
+<l>    for Figure := 1 to 4 by 1</l>
+<l>    copy_obj (ClassRegions, ObjectsSelected, Figure, 1)</l>
+<l>    connection (ObjectsSelected, ConnectedRegions)</l>
+<l>    select_shape (ConnectedRegions, SelectedRegions, 'area', 'and', 400, 99999)</l>
+<l>    dev_set_color (Highlight[Figure - 1])</l>
+<l>    dev_display (SelectedRegions)</l>
+<c>     </c>
+<l>    endfor</l>
+<l>    wait_seconds (0.01)</l>
+<l>endwhile</l>
+<l>close_framegrabber (AcqHandle)</l>
+<c></c>
+</body>
+<docu id="main">
+<parameters/>
+</docu>
+</procedure>
+</hdevelop>

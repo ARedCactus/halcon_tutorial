@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hdevelop file_version="1.2" halcon_version="21.11.0.0">
+<procedure name="main">
+<interface/>
+<body>
+<c></c>
+<l>read_image (Image, 'color')</l>
+<c></c>
+<l>gen_rectangle1 (ROI_1, 23.066, 239.837, 48.0183, 273.098)</l>
+<l>*gen_rectangle1 (ROI_2, 99.7711, 140.053, 120.103, 173.314)</l>
+<l>concat_obj  (ROI_1, ROI_1, classes)</l>
+<l>gen_rectangle1 (ROI_3, 153.372, 227.826, 186.642, 271.25)</l>
+<l>concat_obj  (ROI_3, classes, classes)</l>
+<l>gen_rectangle1 (ROI_4, 108.088, 347.012, 132.117, 382.121)</l>
+<l>concat_obj  (ROI_4,classes, classes)</l>
+<l>gen_rectangle1 (ROI_5, 222.684, 77.2258, 251.333, 122.498)</l>
+<l>concat_obj  (ROI_5, classes, classes)</l>
+<l>gen_rectangle1 (ROI_6, 262.423, 227.826, 277.209, 278.642)</l>
+<l>concat_obj  (ROI_6, classes, classes)</l>
+<l>gen_rectangle1 (ROI_7, 229.153, 387.665, 255.029, 435.709)</l>
+<l>concat_obj  (ROI_7, classes, classes)</l>
+<l>gen_rectangle1 (ROI_8, 89.6053, 510.547, 115.482, 561.363)</l>
+<l>concat_obj  (ROI_8, classes, classes)</l>
+<c></c>
+<c></c>
+<l>create_class_mlp (3, 4, 8, 'softmax', 'principal_components', 3, 42, MLPHandle)</l>
+<l>add_samples_image_class_mlp (Image, classes, MLPHandle)</l>
+<l>train_class_mlp (MLPHandle, 200, 1, 0.01, Error, ErrorLog)</l>
+<l>write_class_mlp (MLPHandle, 'train_mlp_red')</l>
+<l>read_class_mlp ('train_mlp_red', MLPHandle)</l>
+<c></c>
+<l>*open_framegrabber ('DirectShow', 1, 1, 0, 0, 0, 0, 'default', 8, 'rgb', -1, 'false', 'default', '[1] Integrated Camera', 0, -1, AcqHandle)</l>
+<l>open_framegrabber ('DirectShow', 1, 1, 0, 0, 0, 0, 'default', 8, 'rgb', -1, 'false', 'default', '[0] YW500', 0, -1, AcqHandle)</l>
+<l>grab_image_start (AcqHandle, -1)</l>
+<l>while (true)</l>
+<l>    grab_image_async (Image_n, AcqHandle, -1)</l>
+<c>    </c>
+<l>    classify_image_class_mlp (Image_n, ClassRegionsNotRejected, MLPHandle, 0.5) </l>
+<l>    *copy_obj (ClassRegionsNotRejected, ClassRegionsNotRejected, 1, 4)</l>
+<l>    region_to_mean (ClassRegionsNotRejected, Image_n, ImageClass)</l>
+<l>    dev_display (ImageClass)</l>
+<l>    wait_seconds (0.01)</l>
+<l>endwhile</l>
+<l>close_framegrabber (AcqHandle)</l>
+</body>
+<docu id="main">
+<parameters/>
+</docu>
+</procedure>
+<procedure name="segment">
+<interface>
+<io>
+<par name="Image" base_type="iconic" dimension="0"/>
+</io>
+<oo>
+<par name="Regions" base_type="iconic" dimension="0"/>
+</oo>
+</interface>
+<body>
+<l>binary_threshold (Image, Region, 'max_separability', 'dark', UsedThreshold)</l>
+<l>connection (Region, ConnectedRegions)</l>
+<l>fill_up (ConnectedRegions, Regions)</l>
+<l>return ()</l>
+</body>
+<docu id="segment">
+<parameters>
+<parameter id="Image"/>
+<parameter id="Regions"/>
+</parameters>
+</docu>
+</procedure>
+</hdevelop>

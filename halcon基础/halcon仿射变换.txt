@@ -1,0 +1,54 @@
+在C++中使用Halcon进行仿射变换后，将模板绘制在原图像上并输出原图像，可以按照以下步骤进行操作：
+
+1. 首先，导入Halcon的库文件和命名空间。确保已正确安装Halcon并设置好开发环境。
+
+```cpp
+#include <HalconCpp.h>
+using namespace HalconCpp;
+```
+
+2. 加载原图像和模板图像。
+
+```cpp
+HImage originalImage, templateImage;
+originalImage.ReadImage("original_image.jpg");
+templateImage.ReadImage("template_image.jpg");
+```
+
+3. 定义模板的仿射变换参数。这些参数包括平移、旋转和缩放。
+
+```cpp
+HTuple templateWidth, templateHeight;
+GetImageSize(templateImage, &templateWidth, &templateHeight);
+
+HTuple phi = 30.0;      // 旋转角度（单位：度）
+HTuple scale = 1.2;     // 缩放因子
+HTuple tx = 50.0;       // 水平平移量
+HTuple ty = -20.0;      // 垂直平移量
+```
+
+4. 进行仿射变换。
+
+```cpp
+HImage transformedImage;
+AffineTransImage(templateImage, &transformedImage, HomMat2d(phi, tx, ty, scale, 0, 0));
+```
+
+5. 在原图像上绘制变换后的模板。
+
+```cpp
+HRegion region;
+region.GenRectangle1(0, 0, templateHeight, templateWidth);
+region.AffineTransRegion(HomMat2d(phi, tx, ty, scale, 0, 0));
+HImage annotatedImage = originalImage.PaintRegion(region, 128, "fill");
+```
+
+6. 输出绘制了模板的原图像。
+
+```cpp
+annotatedImage.WriteImage("output_image.jpg");
+```
+
+以上代码假设原始图像和模板图像是以JPEG格式存储在名为"original_image.jpg"和"template_image.jpg"的文件中。仿射变换参数phi、scale、tx和ty可以根据实际情况进行调整。绘制了模板的原图像将保存为"output_image.jpg"。请确保将文件路径替换为您实际使用的路径。
+
+注意：以上代码只提供了基本的示例，实际情况可能需要根据具体需求进行调整。另外，确保在使用Halcon之前正确初始化Halcon环境并释放相关资源以避免内存泄漏。

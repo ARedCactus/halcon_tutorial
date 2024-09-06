@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hdevelop file_version="1.2" halcon_version="21.11.0.0">
+<procedure name="main">
+<interface/>
+<body>
+<l>create_data_code_2d_model('QR Code',[],[],Handle)</l>
+<l>list_image_files ('files', 'default', [], ImageFiles)</l>
+<l>for I :=0 to |ImageFiles|-1 by 1</l>
+<l>    read_image(image,ImageFiles[I])</l>
+<l>    find_data_code_2d (image, SymbolXLDs, Handle, [], [], ResultHandles, DecodedDataStrings)</l>
+<l>*     stop()</l>
+<l>endfor</l>
+<c></c>
+<c>      </c>
+<c></c>
+</body>
+<docu id="main">
+<parameters/>
+</docu>
+</procedure>
+<procedure name="display_found_data_codes">
+<interface>
+<io>
+<par name="SymbolXLDs" base_type="iconic" dimension="0"/>
+</io>
+<ic>
+<par name="WindowHandle" base_type="ctrl" dimension="0"/>
+<par name="DecodedDataStrings" base_type="ctrl" dimension="0"/>
+<par name="TitleMessage" base_type="ctrl" dimension="0"/>
+<par name="ResultMessage" base_type="ctrl" dimension="0"/>
+<par name="ColorDecodedStrings" base_type="ctrl" dimension="0"/>
+<par name="ColorResult" base_type="ctrl" dimension="0"/>
+</ic>
+</interface>
+<body>
+<c>* This procedure displays the results of the search for</c>
+<c>* 2d data codes. The data strings are displayed accordingly</c>
+<c>* to their length so that the whole string is visible.</c>
+<c>* If the data strings are too long only the first 50 chars</c>
+<c>* are displayed.</c>
+<c></c>
+<c>* Input parameters are the XLD contours of the decoded</c>
+<c>* data symbols, the decoded data strings, the windowhandle,</c>
+<c>* a title message, a result message, the color of the decoded</c>
+<c>* strings and the color of the result message.</c>
+<c></c>
+<c>* Display the result of the search for each found data code.</c>
+<l>for J := 0 to |DecodedDataStrings| - 1 by 1</l>
+<c></c>
+<c>    * Display the XLD contour.</c>
+<l>    select_obj (SymbolXLDs, SymbolXLD, J + 1)</l>
+<l>    get_contour_xld (SymbolXLD, Row, Column)</l>
+<l>    dev_display (SymbolXLD)</l>
+<c></c>
+<c>    * Display messages.</c>
+<c>    * ------------------</c>
+<c>    * Determine the length of the dislayed decoded data string.</c>
+<l>    get_window_extents (WindowHandle, Row1, Column1, Width, Height)</l>
+<l>    get_string_extents (WindowHandle, DecodedDataStrings[J], Ascent, Descent, TWidth, THeight)</l>
+<l>    if (TWidth &gt; Width)</l>
+<l>        DecodedDataStrings[J] := DecodedDataStrings[J]{0:50} + '...'</l>
+<l>        get_string_extents (WindowHandle, DecodedDataStrings[J], Ascent, Descent, TWidth, THeight)</l>
+<l>    endif</l>
+<c></c>
+<c>    * Split the decoded string in new lines for better readability.</c>
+<l>    tuple_regexp_replace (DecodedDataStrings[J], ['[\\r\\f,^#;]', 'replace_all'], '\n', DecodedData)</l>
+<l>    tuple_split (DecodedData, '\n', DecodedDataSubstrings)</l>
+<c></c>
+<c>    * Determine the position of the displayed decoded data string.</c>
+<l>    if (max(Row) &gt; 420 and min(Row) &lt; 40)</l>
+<l>        TPosRow := max(Row) - 30</l>
+<l>    elseif (max(Row) &gt; 420)</l>
+<l>        TPosRow := min(Row) - 20</l>
+<l>    elseif (min(Row) &lt; 100)</l>
+<l>        TPosRow := max(Row) - 20</l>
+<l>    else</l>
+<l>        TPosRow := max(Row) - 30</l>
+<l>    endif</l>
+<l>    TPosColumn := max([min([mean(Column) - TWidth / 2,Width - 32 - TWidth]),12])</l>
+<l>    dev_disp_text (DecodedDataStrings[J], 'image', TPosRow, TPosColumn, ColorDecodedStrings, [], [])</l>
+<l>endfor</l>
+<c></c>
+<c>* Display the title message and result message.</c>
+<l>dev_disp_text (TitleMessage, 'window', 12, 12, 'black', [], [])</l>
+<l>dev_disp_text (ResultMessage, 'window', 40, 12, ColorResult, [], [])</l>
+<l>return ()</l>
+</body>
+<docu id="display_found_data_codes">
+<parameters>
+<parameter id="ColorDecodedStrings"/>
+<parameter id="ColorResult"/>
+<parameter id="DecodedDataStrings"/>
+<parameter id="ResultMessage"/>
+<parameter id="SymbolXLDs"/>
+<parameter id="TitleMessage"/>
+<parameter id="WindowHandle"/>
+</parameters>
+</docu>
+</procedure>
+</hdevelop>

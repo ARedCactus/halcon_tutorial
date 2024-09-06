@@ -1,0 +1,38 @@
+list_files ('D:/Program Files/MVTec/HALCON-21.11-Progress/examples/images/board', 'files', Files)
+1.地址     2，‘files’固定字符串     3，输出
+
+tuple_regexp_select (Files, '\\.png$', Files)
+1,输入    2.被筛选的对象后缀名    3，输出
+
+read_image (Image, Files[0])
+1.输出     2.输入的对象集合（数组）
+
+dev_open_window_fit_image (Image, 0, 0, -1, -1, WindowHandle)
+==打开与image同样规模的窗口      返回句柄WindowHandle
+
+dev_display (Image)    ==展示图片
+
+dev_set_color ('red')
+gen_rectangle1 (Rectangle, 164.5, 126.5, 323, 476.5)     ==第一个
+
+dev_set_color ('green')
+gen_rectangle1 (Rectangle1, 117.5, 138.5, 164.5, 166.5)    ==第二个
+
+reduce_domain (Image, Rectangle, ImageReduced)
+
+截取两个矩形区域，充当模板   ImageReduced为第一个截取的区域
+
+create_shape_model (ImageReduced, 4, rad(0), rad(360), 'auto', 'auto', 'use_polarity', 30, 10, ModelID)
+==生成模板   输出模板的句柄ModelID
+
+area_center (Rectangle, Area, Row, Column)   输入矩形区域      输出面积Area   坐标Row和Column
+
+set_shape_model_origin (ModelID, -Row, -Column)    ==设置模板起源     输入句柄ModelID  -的（Rows，Column）
+
+get_shape_model_contours (ModelContours, ModelID, 1)  ==获取模板的轮廓   输出轮廓ModeContour   输入句柄ModelID  
+参数为1 时  轮廓大小与原图遗址   参数大于1时  等比例缩小     参数小于1时报错
+
+dev_set_color ('red')         
+dev_set_draw ('margin')       设置draw模式为‘边缘’
+dev_display (ModelContours)      
+   

@@ -1,0 +1,4 @@
+﻿  MFCApplication1Dlg.cpp
+E:\代码库\halcon 视觉检测目录1\MFCApplication1\MFCApplication1\MFCApplication1Dlg.cpp(196,13): warning C4244: “初始化”: 从“Hlong”转换到“int”，可能丢失数据
+E:\代码库\halcon 视觉检测目录1\MFCApplication1\MFCApplication1\MFCApplication1Dlg.cpp(197,12): warning C4244: “初始化”: 从“Hlong”转换到“int”，可能丢失数据
+  MFCApplication1.vcxproj -> E:\代码库\halcon 视觉检测目录1\MFCApplication1\x64\Debug\MFCApplication1.exe

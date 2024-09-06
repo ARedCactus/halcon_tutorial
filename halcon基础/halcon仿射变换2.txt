@@ -1,0 +1,52 @@
+在C++中使用Halcon显示仿射变换后的结果，您可以通过以下步骤实现：
+
+1. 导入Halcon的库文件和命名空间。确保已正确安装Halcon并设置好开发环境。
+
+```cpp
+#include <HalconCpp.h>
+#include <HDevThread.h>
+using namespace HalconCpp;
+```
+
+2. 加载原图像和模板图像。
+
+```cpp
+HImage originalImage, templateImage;
+originalImage.ReadImage("original_image.jpg");
+templateImage.ReadImage("template_image.jpg");
+```
+
+3. 定义模板的仿射变换参数。
+
+```cpp
+HTuple phi = 30.0;      // 旋转角度（单位：度）
+HTuple scale = 1.2;     // 缩放因子
+HTuple tx = 50.0;       // 水平平移量
+HTuple ty = -20.0;      // 垂直平移量
+```
+
+4. 进行仿射变换。
+
+```cpp
+HImage transformedImage;
+AffineTransImage(templateImage, &transformedImage, HomMat2d(phi, tx, ty, scale, 0, 0));
+```
+
+5. 创建Halcon窗口并显示原图像和仿射变换后的图像。
+
+```cpp
+HDevWindowStack::Push();
+HDevWindowStack::SetActive(0);
+HDevWindowStack::GetActive().SetPart(0, 0, -1, -1);
+originalImage.DispImage(0);
+transformedImage.DispImage(0);
+HDevWindowStack::SetActive(1);
+HDevWindowStack::SetActive(0);
+HDevWindowStack::Pop();
+```
+
+以上代码假设原始图像和模板图像是以JPEG格式存储在名为"original_image.jpg"和"template_image.jpg"的文件中。仿射变换参数phi、scale、tx和ty可以根据实际情况进行调整。在代码中，我们创建了一个Halcon窗口，并在其中显示原图像和仿射变换后的图像。
+
+请确保将文件路径替换为您实际使用的路径。
+
+注意：在使用Halcon进行图像显示时，通常需要与特定的开发环境（如Halcon IDE）配合使用，这些环境提供了图像显示的功能。上述代码示例适用于使用Halcon IDE或者基于Halcon的开发环境进行编程的情况。如果您没有使用特定的开发环境，可以尝试其他图像显示库或工具，如OpenCV。

@@ -1,0 +1,44 @@
+在Halcon中获取窗口句柄，您可以使用HDevWindowStack类的GetActiveHandle()方法。以下是获取窗口句柄的基本步骤：
+
+1. 导入Halcon的库文件和命名空间。确保已正确安装Halcon并设置好开发环境。
+
+```cpp
+#include <HalconCpp.h>
+#include <HDevThread.h>
+using namespace HalconCpp;
+```
+
+2. 创建Halcon窗口。
+
+```cpp
+HDevWindowStack::Push();
+HDevWindowStack::SetActive(0);
+HDevWindowStack::GetActive().SetPart(0, 0, -1, -1);
+```
+
+3. 获取窗口句柄。
+
+```cpp
+Hlong windowHandle = HDevWindowStack::GetActiveHandle();
+```
+
+4. 使用窗口句柄进行其他操作。
+
+```cpp
+// 示例：将窗口标题设置为指定的文本
+SetWindowParam(windowHandle, "title", "My Halcon Window");
+```
+
+5. 关闭窗口并清除相关资源。
+
+```cpp
+HDevWindowStack::SetActive(1);
+HDevWindowStack::SetActive(0);
+HDevWindowStack::Pop();
+```
+
+以上代码示例创建了一个名为"Halcon窗口"的窗口，并获取了该窗口的句柄。您可以使用获取到的窗口句柄进行其他窗口操作，例如设置窗口标题、调整窗口大小、添加菜单等。
+
+请注意，窗口句柄类型为Hlong，您可以将其保存并在需要的地方使用。如果您需要对多个窗口进行操作，可以通过创建多个Halcon窗口和获取对应的窗口句柄来管理多个窗口。
+
+请确保根据实际需求在代码中使用正确的窗口句柄。另外，记得在关闭窗口和清除资源时使用Pop()方法来确保正确释放窗口资源。

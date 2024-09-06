@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hdevelop file_version="1.2" halcon_version="21.11.0.0">
+<procedure name="main">
+<interface/>
+<body>
+<l>open_framegrabber ('DirectShow', 1, 1, 0, 0, 0, 0, 'default', 8, 'rgb', -1, 'false', 'default', '[0] YW500', 0, -1, AcqHandle)</l>
+<l>grab_image_start (AcqHandle, -1)</l>
+<l>grab_image_async (Image_n0, AcqHandle, -1)</l>
+<l>get_image_size (Image_n0, Width, Height)</l>
+<l>dev_open_window (0, 0, Width*2, Height*2, 'white', WindowHandle)</l>
+<l>dev_display (Image_n0)</l>
+<l>Regions := ['red', 'green', 'blue','black' ,'background']</l>
+<l>Highlight := ['red', 'green', 'blue','black']</l>
+<c></c>
+<l>read_class_mlp ('train_mlp_3color', MLPHandle)</l>
+<l>while (true)</l>
+<l>    grab_image_async (Image_n, AcqHandle, -1)</l>
+<l>    classify_image_class_mlp (Image_n, ClassRegions, MLPHandle, 0.5)</l>
+<c>    </c>
+<l>    for Figure := 1 to 4 by 1</l>
+<l>    copy_obj (ClassRegions, ObjectsSelected, Figure, 1)</l>
+<l>    connection (ObjectsSelected, ConnectedRegions)</l>
+<l>    fill_up (ConnectedRegions, RegionFillUp)</l>
+<l>    area_center (RegionFillUp, Area, Row3, Column3)</l>
+<l>    select_shape (RegionFillUp, SelectedRegions, 'area', 'and', max(Area), 99999)</l>
+<l>    shape_trans (SelectedRegions, RegionTrans, 'inner_rectangle1')</l>
+<c>    </c>
+<l>    dev_set_color (Highlight[Figure - 1])</l>
+<l>    dev_display (RegionTrans)</l>
+<c>     </c>
+<l>    endfor</l>
+<l>    wait_seconds (0.01)</l>
+<l>endwhile</l>
+<l>close_framegrabber (AcqHandle)</l>
+</body>
+<docu id="main">
+<parameters/>
+</docu>
+</procedure>
+</hdevelop>
